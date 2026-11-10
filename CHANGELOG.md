@@ -1,0 +1,17 @@
+# Changelog
+
+## 0.1.0
+First test build (not released), built on Redact's editor:
+- Tools: Text (the default: tap, type, Done), Callout (a label with a pointer), Arrow, Line, Circle, Box, Number
+  (1, 2, 3…, renumbered when one is deleted), Highlight (see-through), Pen, Cover (black, white or colour from around)
+  and Crop.
+- Text in three styles: Label (the default, letters in black or white on a box in your colour), Outline and Plain;
+  sized for the picture, S / M / L; English and Thai typefaces built in; recent texts offered with one tap (kept for
+  the session, or on the device if asked).
+- Six colours; a faint black or white edge keeps lines and shapes visible on any background.
+- Select a mark to move it, drag its handles, change its colour, size or style, edit or delete it; undo and redo;
+  zoom and move with two fingers or the mouse wheel.
+- Several pictures at once (up to 20); one picture opens straight into the editor. Paste a screenshot with Ctrl+V or
+  drop pictures on a computer.
+- Done makes a clean copy: drawn into a new picture at full size, covers painted last and checked pixel by pixel,
+  cleaned with Unmarked's cleaner (no location, phone or date). Save, Share, or Copy picture on a computer.

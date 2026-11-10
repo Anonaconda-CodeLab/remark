@@ -1,0 +1,206 @@
+<!-- Copyright (C) 2026 Anonaconda Code Lab · SPDX-License-Identifier: GPL-3.0-or-later -->
+<main id="app">
+  <header class="bar">
+    <button class="brand" id="btnHome" aria-label="{{APP_NAME}}: start">
+      {{ICON}}
+      <span>{{APP_NAME}}</span>
+    </button>
+    <div class="bar-acts">
+      <button id="btnSettings" class="icon-btn" aria-label="Settings" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+      <button id="btnAbout" class="icon-btn" aria-label="About and help" title="About and help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- START: open pictures -->
+  <section id="scrHome" class="screen">
+    <div class="intro" id="intro">
+      <h1>Write on pictures, then share a clean copy</h1>
+      <p>Add a name or a note to a receipt or a screenshot in seconds, with text that stays readable on any background. Point things out with callouts, arrows, circles and numbers, highlight, draw, or cover a stray detail.</p>
+      <p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>Nothing leaves this device. Nothing is uploaded, and nothing is kept after you close the app.</p>
+      {{ANDROID_LINK}}
+    </div>
+    <div class="add-row" id="addRow">
+      <label class="add-btn primary" id="photosLbl"><input type="file" id="photoInput" multiple accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4.5" width="16" height="15" rx="2"/><circle cx="9" cy="9.5" r="1.6"/><path d="m20 15-4.5-4.5L7 19"/></svg><span>Open photos</span></label>
+      <label class="add-btn" id="filesLbl"><input type="file" id="fileInput" multiple><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2h8a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span>Browse files</span></label>
+      <button id="btnPhotosN" class="add-btn primary" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4.5" width="16" height="15" rx="2"/><circle cx="9" cy="9.5" r="1.6"/><path d="m20 15-4.5-4.5L7 19"/></svg><span>Open photos</span></button>
+      <button id="btnFilesN" class="add-btn" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2h8a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg><span>Browse files</span></button>
+    </div>
+    <p class="hint web-only pc-only">Or paste a screenshot here with Ctrl+V, or drop pictures on this page.</p>
+
+    <div id="picsWrap" hidden>
+      <div class="sec-head"><h2>Pictures</h2><span class="dev-meta">Tap one to mark it up</span></div>
+      <ol class="pics" id="pics" translate="no"></ol>
+      <div class="acts-row center-row"><button class="btn small" id="btnClearAll">Close all pictures</button></div>
+    </div>
+
+    <div class="card uses" id="uses">
+      <h2 class="limits-title">Why use {{APP_NAME}}</h2>
+      <ul>
+        <li><b>A note where it belongs.</b> "Paid by Sam" on the receipt, "this button" on the screenshot, a name on the delivery photo.</li>
+        <li><b>Readable on any background.</b> Text sits on a label in your colour, sized for the picture, in English or Thai.</li>
+        <li><b>A clean copy.</b> {{APP_NAME}} draws your marks into a brand-new picture. Where a photo was taken and which phone took it stay behind, and your marks can't be peeled off.</li>
+        <li><b>Hide a stray detail.</b> A cover in black, white or the colour around it becomes part of the picture. For faces, number plates and card numbers found for you, use Redact.</li>
+      </ul>
+    </div>
+
+    <div class="card limits" id="limits">
+      <h2 class="limits-title">Good to know</h2>
+      <ul>
+        <li><b>Only a cover hides anything.</b> A highlighter, a box or a line over something still shows it.</li>
+        <li><b>Your original stays as it was.</b> It is still in your gallery and in any cloud backup.</li>
+      </ul>
+      <p class="as-is" id="asIs"><b>No guarantee.</b> {{APP_NAME}} is free software provided as it is, without any warranty. Check every picture before you share it. You are responsible for what you share, and Anonaconda Code Lab accepts no liability for any loss or harm from using this app.</p>
+    </div>
+    {{THANKS}}
+  </section>
+
+  <!-- MARK UP ONE PICTURE -->
+  <section id="scrEdit" class="screen edit" hidden>
+    <div class="edit-head">
+      <button class="btn small" id="btnEditBack">‹ Pictures</button>
+      <span class="edit-n" id="editN" translate="no"></span>
+      <span class="edit-nav"><button class="icon-btn small" id="btnPrev" aria-label="Previous picture" title="Previous picture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 6-6 6 6 6"/></svg></button><button class="icon-btn small" id="btnNext" aria-label="Next picture" title="Next picture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9.5 6 6 6-6 6"/></svg></button></span>
+      <button class="icon-btn small" id="btnUndo" aria-label="Undo" title="Undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7 4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/></svg></button>
+      <button class="icon-btn small" id="btnRedo" aria-label="Redo" title="Redo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7l4.5 4.5L15 16"/><path d="M19 11.5h-9a5 5 0 0 0 0 10h2"/></svg></button>
+      <button class="btn small primary" id="btnDone">Done</button>
+    </div>
+    <div class="stage-wrap">
+      <canvas id="stage" class="stage" aria-label="The picture with its marks" translate="no"></canvas>
+      <div class="busy-veil" id="stageBusy" hidden><i></i></div>
+    </div>
+    <div class="text-bar" id="textBar" hidden>
+      <div class="chips recent" id="recentRow" aria-label="Recent texts" translate="no"></div>
+      <div class="find-row">
+        <textarea class="text-in" id="textIn" rows="1" maxlength="500" placeholder="Type here…" aria-label="Text on the picture" enterkeyhint="done" spellcheck="false" autocomplete="off" translate="no"></textarea>
+        <button class="btn small primary" id="btnTextDone" type="button">Done</button>
+      </div>
+      <p class="dev-meta small-note">Shift+Enter starts a new line.</p>
+    </div>
+    <div class="tool-row" id="toolRow" role="toolbar" aria-label="Tools">
+      <button data-tool="text" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M5 6.5V5h14v1.5M12 5v14M9 19h6"/></svg><span>Text</span></button>
+      <button data-tool="callout" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="11" rx="2.5"/><path d="M8 15l-2.5 5 6-5M7.5 8.5h9M7.5 11.5h5"/></svg><span>Callout</span></button>
+      <button data-tool="arrow" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M5 19 18 6M10 6h8v8"/></svg><span>Arrow</span></button>
+      <button data-tool="line" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4.5 18.5 19.5 5.5"/></svg><span>Line</span></button>
+      <button data-tool="ellipse" aria-pressed="false"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8.5" ry="6.5"/></svg><span>Circle</span></button>
+      <button data-tool="rect" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5"/></svg><span>Box</span></button>
+      <button data-tool="number" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M10.5 9.5 12.5 8v8.5"/></svg><span>Number</span></button>
+      <button data-tool="highlight" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 16.5h11" stroke-width="5" opacity=".4"/><path d="m14 4.5 5 5-6.5 6.5h-5v-5z"/></svg><span>Highlight</span></button>
+      <button data-tool="pen" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 20c3-1 4-4 6-6s4-1 4.5 1-1.5 3 1 3 3.5-3 4.5-5"/></svg><span>Pen</span></button>
+      <button data-tool="cover" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><rect x="6" y="10" width="12" height="4" rx=".5" fill="currentColor"/></svg><span>Cover</span></button>
+      <button data-tool="crop" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M7 3v14h14M3 7h14v14"/></svg><span>Crop</span></button>
+    </div>
+    <p class="hint" id="toolHint"></p>
+    <div class="card opts">
+      <div class="opt-line" id="optColours" role="group" aria-label="Colour">
+        <button type="button" class="swatch-btn" data-colour="red" aria-pressed="true" aria-label="Red" style="--sw:#e53935"></button>
+        <button type="button" class="swatch-btn" data-colour="yellow" aria-pressed="false" aria-label="Yellow" style="--sw:#fdd835"></button>
+        <button type="button" class="swatch-btn" data-colour="green" aria-pressed="false" aria-label="Green" style="--sw:#23843d"></button>
+        <button type="button" class="swatch-btn" data-colour="blue" aria-pressed="false" aria-label="Blue" style="--sw:#1e6fe0"></button>
+        <button type="button" class="swatch-btn" data-colour="black" aria-pressed="false" aria-label="Black" style="--sw:#141414"></button>
+        <button type="button" class="swatch-btn" data-colour="white" aria-pressed="false" aria-label="White" style="--sw:#ffffff"></button>
+      </div>
+      <div class="opt-line">
+        <div class="seg" id="optSize" role="group" aria-label="Size">
+          <button data-size="s" aria-pressed="false">S</button><button data-size="m" aria-pressed="true">M</button><button data-size="l" aria-pressed="false">L</button>
+        </div>
+        <div class="seg" id="optStyle" role="group" aria-label="Text style">
+          <button data-tstyle="label" aria-pressed="true">Label</button><button data-tstyle="outline" aria-pressed="false">Outline</button><button data-tstyle="plain" aria-pressed="false">Plain</button>
+        </div>
+      </div>
+      <div id="optFill" hidden>
+        <div class="chips" role="group" aria-label="Cover colour">
+          <button type="button" class="chip-btn" data-fill="black" aria-pressed="true">Black</button>
+          <button type="button" class="chip-btn" data-fill="white" aria-pressed="false">White</button>
+          <button type="button" class="chip-btn" data-fill="around" aria-pressed="false">Colour from around</button>
+        </div>
+        <p class="dev-meta small-note">Colour from around blends into the background, so a cover on a receipt barely shows. Only a cover hides anything: it replaces the pixels under it.</p>
+      </div>
+      <div class="acts-row" id="optCrop" hidden>
+        <button class="btn small" id="btnCropReset">Whole picture</button><button class="btn small primary" id="btnCropDone">Crop done</button>
+      </div>
+      <div class="acts-row" id="optSel" hidden>
+        <button class="btn small" id="btnEditText">Edit text</button><button class="btn small" id="btnDelete">Delete</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECK AND SAVE -->
+  <section id="scrCheck" class="screen" hidden>
+    <div class="done-hero"><h2 id="checkTitle">Making a clean copy…</h2><p id="checkSub" translate="no"></p></div>
+    <div class="progress" id="checkProgress"><i></i></div>
+    <img class="result-img" id="checkImg" alt="The picture as it will be saved" hidden translate="no">
+    <div class="acts-row center-row" id="saveRow" hidden>
+      <button id="btnSave" class="btn primary">Save</button>
+      <button id="btnShare" class="btn" hidden>Share</button>
+      <button id="btnCopy" class="btn" hidden>Copy picture</button>
+    </div>
+    <p class="hint" id="saveHint"></p>
+    <ul class="checks" id="checkList"></ul>
+    <p class="dev-meta center" id="origNote" hidden>Your original picture is unchanged: it is still in your gallery, and in any cloud backup.</p>
+    {{DONATE}}
+    <div class="acts-row center-row"><button id="btnCheckBack" class="btn">‹ Back to editing</button><button id="btnCheckNext" class="btn" hidden>Next picture ›</button></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="scrSettings" class="screen" hidden>
+    <div class="intro"><h1>Settings</h1></div>
+    <div class="card opts">
+      <div>
+        <p class="opt-lbl">Save as</p>
+        <div class="chips" id="formatChips">
+          <button type="button" class="chip-btn" data-format="auto" aria-pressed="true">Same kind as the original</button>
+          <button type="button" class="chip-btn" data-format="png" aria-pressed="false">PNG</button>
+          <button type="button" class="chip-btn" data-format="jpeg" aria-pressed="false">JPEG</button>
+        </div>
+        <p class="dev-meta small-note">Same kind: PNG stays PNG (sharp text in screenshots); JPEG and WebP photos become JPEG.</p>
+      </div>
+      <div>
+        <p class="opt-lbl">Names of saved pictures</p>
+        <div class="chips" id="nameChips">
+          <button type="button" class="chip-btn" data-names="plain" aria-pressed="true">Plain: remark-1.jpg</button>
+          <button type="button" class="chip-btn" data-names="original" aria-pressed="false">Original name + "-remark"</button>
+        </div>
+        <p class="dev-meta small-note">A file's name goes with it. Camera names say when a photo was taken (IMG_20261024_143512), and your own names may say what it shows.</p>
+      </div>
+    </div>
+    <label class="check"><input type="checkbox" id="setRemember"><span><b>Remember these settings on this device</b><small>The format, names, and your last colour and text style. Without it they last until you close {{APP_NAME}}.</small></span></label>
+    <label class="check"><input type="checkbox" id="setTexts"><span><b>Also remember recent texts</b><small>The last few things you typed, offered with one tap. Kept in this browser (or the app) only. Off: they last until you close {{APP_NAME}}.</small></span></label>
+    <div class="acts-row"><button class="btn small" id="btnForgetTexts">Forget recent texts</button></div>
+    <div class="acts-row"><button class="btn" id="btnSettingsBack">Done</button></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="scrAbout" class="screen" hidden>
+    <div class="intro"><h1>About and help</h1></div>
+    <div class="links">
+      <button class="row-btn" id="btnHelp"><span>User manual<small>The tools, saving and sharing, and privacy</small></span><span class="chev">›</span></button>
+      <button class="row-btn" id="btnLicences"><span>Licences<small>The components built into {{APP_NAME}} and their licences</small></span><span class="chev">›</span></button>
+    </div>
+    {{ABOUT}}
+    <div class="acts-row"><button class="btn" id="btnAboutBack">Back</button></div>
+  </section>
+
+  <!-- LICENCES -->
+  <section id="scrLicences" class="screen" hidden>
+    <div class="acts-row"><button class="btn" id="btnLicencesBack">‹ Back</button></div>
+    <pre class="licences" translate="no">{{LICENCES}}</pre>
+  </section>
+
+  <!-- MANUAL -->
+  <section id="scrHelp" class="screen" hidden>
+    <div class="acts-row"><button class="btn" id="btnHelpBack">‹ Back</button></div>
+    <article class="manual" id="manual">{{MANUAL}}</article>
+  </section>
+</main>
+
+<template id="tplPic">
+  <li class="pic">
+    <button class="pic-thumb" aria-label="Mark up this picture"><img alt="" draggable="false"><span class="busy-veil"><i></i></span></button>
+    <div class="pic-info"><span class="pic-n"></span><span class="pic-state"></span></div>
+    <button class="icon-btn small" data-a="remove" aria-label="Close this picture" title="Close this picture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+  </li>
+</template>

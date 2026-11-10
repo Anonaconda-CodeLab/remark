@@ -1,0 +1,14 @@
+{
+  "name": "remark",
+  "version": "0.1.0",
+  "description": "Write notes, callouts, arrows and highlights on photos and screenshots, then save or share a clean copy, entirely on your device.",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://remark.anonacondacodelab.com",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node build.mjs && node --test tests/*.test.mjs"
+  },
+  "engines": { "node": ">=20.12" }
+}

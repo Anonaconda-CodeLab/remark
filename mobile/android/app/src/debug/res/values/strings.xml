@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Test builds (android-debug.yml) install as a separate app, "Remark (test)", beside the official one -->
+<resources>
+    <string name="app_name">Remark (test)</string>
+    <string name="title_activity_main">Remark (test)</string>
+</resources>
