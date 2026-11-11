@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+- Callout: after typing, the callout stays selected, so its round handle shows and can be dragged straight to
+  what it's about (it used to be deselected, hiding the handle). The hint says so.
+
 ## 0.1.0
 First test build (not released), built on Redact's editor:
 - Tools: Text (the default: tap, type, Done), Callout (a label with a pointer), Arrow, Line, Circle, Box, Number

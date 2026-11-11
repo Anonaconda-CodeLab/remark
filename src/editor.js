@@ -147,7 +147,12 @@ window.RemarkEditor = (() => {
     crop: 'Drag the corners to keep only part of the picture.'
   };
   const TEXTY = new Set(['text', 'callout']);
-  function hint() { $('toolHint').textContent = ed.sel && ed.tool !== 'crop' ? 'Drag to move. Tap empty space to deselect.' : HINTS[ed.tool]; }
+  function hint() {
+    const m = selMark();
+    $('toolHint').textContent = m && ed.tool !== 'crop'
+      ? (m.kind === 'callout' ? 'Drag the round handle to what it\'s about. Drag the label to move it.' : 'Drag to move. Tap empty space to deselect.')
+      : HINTS[ed.tool];
+  }
   function setTool(t) {
     endText();
     ed.tool = t; ed.sel = null;
@@ -231,7 +236,9 @@ window.RemarkEditor = (() => {
       e.m.text = e.m.text.replace(/\s+$/, '');
       if (!e.isNew && e.m.text === e.before) ed.pic.hist.pop();
       A.rememberText(e.m.text);
-      ed.sel = null;   // the next tap writes the next text (tap the text to move or change it)
+      // the next tap writes the next text (tap the text to move or change it); a callout stays selected, so its
+      // round handle shows and can be dragged to what it is about
+      ed.sel = e.m.kind === 'callout' ? e.m.id : null;
     }
     changed(); hint();
   }
