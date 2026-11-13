@@ -57,7 +57,7 @@ const RemarkNative = NATIVE ? {
   release: () => nativeCall('Remark', 'clearShared').catch(() => {}),
   // pictures shared to Remark from another app ("Share → Remark")
   async takeShared() { const r = await nativeCall('Remark', 'getShared'); return (r && r.files) || []; },
-  // Android's own file picker: kind 'images', 'any' (Browse files) or 'text' (a Find words list)
+  // Android's own file picker: kind 'images' or 'any' (Browse files)
   async pickFiles(kind) { const r = await nativeCall('Remark', 'pickFiles', { kind: kind || 'images' }); return (r && r.files) || []; },
   onShared: cb => nativeOn('Remark', 'shared', cb),
   openUrl: url => nativeCall('Remark', 'openUrl', { url })

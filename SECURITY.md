@@ -18,12 +18,13 @@
   Only JPEG, PNG and WebP are opened. Pictures are decoded by the browser; nothing from a file is ever inserted as HTML. The text a person types is drawn
   on the canvas and shown with `textContent`, never as HTML.
 - **Covers are pixels.** Covers replace pixel values in a full-size copy of the picture, and a new file is encoded
-  from those pixels alone: no layer, no part of the original file. Text is covered only with solid colour, because
-  blurred or pixelated text can be read back; faces may also use a coarse mosaic with random noise.
+  from those pixels alone: no layer, no part of the original file. Covers are solid only (black, white or the colour
+  around), because blurred or pixelated text can be read back. Remark finds nothing by itself: for faces, and for
+  numbers or text found automatically, use Redact (redact.anonacondacodelab.com).
 - **Every saved picture is checked** before it can be saved or shared: decoded again and compared pixel by pixel with
   what each cover should be (exactly for PNG; for JPEG within a tolerance, away from cover edges), with overlapping
-  covers in painting order; looked at and read again as a new picture, listing anything of the kinds the person chose
-  to cover that can still be found; and inspected by Unmarked's cleaner, which must find no hidden data. The browser's
+  covers in painting order; and inspected by Unmarked's cleaner, which must find no hidden data. A picture copied to
+  the clipboard (computers) gets the same inspection. The browser's
   encoder adds a standard colour profile to JPEGs: the cleaner removes it without touching the picture data.
 - **Translation.** Pictures, typed text and file names are marked `translate="no"`, so a browser's translate feature, which sends page
   text to an online service, leaves them out.

@@ -173,12 +173,16 @@ window.RemarkSave = (() => {
   $('btnCopy').onclick = async () => {
     const r = cur; if (!r || !r.bytes) return;
     try {
-      let png = new Blob([r.bytes], { type: r.mime });
-      if (r.mime !== 'image/png') {   // made from the clean file's pixels, so nothing else comes along
-        const bm = await createImageBitmap(png), c = new OffscreenCanvas(bm.width, bm.height);
+      // a JPEG is copied as a PNG made from the clean file's pixels; that PNG goes through the cleaner and the
+      // inspector too, like every file Remark hands on (the promise keeps the click's permission to copy)
+      const png = r.mime === 'image/png' ? Promise.resolve(new Blob([r.bytes], { type: 'image/png' })) : (async () => {
+        const bm = await createImageBitmap(new Blob([r.bytes], { type: r.mime })), c = new OffscreenCanvas(bm.width, bm.height);
         c.getContext('2d').drawImage(bm, 0, 0); bm.close();
-        png = await c.convertToBlob({ type: 'image/png' });
-      }
+        const out = (await Clean.clean(new Uint8Array(await (await c.convertToBlob({ type: 'image/png' })).arrayBuffer()))).bytes;
+        const left = ((await Clean.inspect(out)).findings || []).filter(x => x.keep !== 'always');
+        if (left.length) throw new Error('the copy still carried hidden data, so it was not copied. Use Save instead.');
+        return new Blob([out], { type: 'image/png' });
+      })();
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]);
       A.toast('Copied. Paste it into a chat or an email.');
       saved();

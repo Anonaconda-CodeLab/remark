@@ -100,6 +100,9 @@ original name instead (with `-remark` added).
 [[android]]In the Android app, the save screen opens in the original's folder.
 [[/android]]
 
+**Copy picture** (computers) puts the picture on your computer's clipboard. If your system syncs the clipboard to other
+devices (Windows clipboard sync, Apple's Universal Clipboard), it goes there too; use **Save** if that matters.
+
 **Your original stays as it was**: it is still in your gallery, and in any cloud backup.
 
 ## Settings

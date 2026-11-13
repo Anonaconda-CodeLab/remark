@@ -120,17 +120,15 @@ public class RemarkPlugin extends Plugin {
 
     /* Android's own file picker. Unlike the WebView's upload box it reports where each file is. It grants read access
        to the chosen files only, for as long as the app is open; no storage permission is needed. kind: "images"
-       (pictures only), "any" (Browse files: any folder, any file; the page refuses what isn't a picture) or "text"
-       (a Find words list). */
+       (pictures only) or "any" (Browse files: any folder, any file; the page refuses what isn't a picture). */
     @PluginMethod
     public void pickFiles(PluginCall call) {
         String kind = call.getString("kind", "images");
         Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
         if ("any".equals(kind)) i.setType("*/*");
-        else if ("text".equals(kind)) { i.setType("text/*"); i.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "text/plain" }); }
         else { i.setType("image/*"); i.putExtra(Intent.EXTRA_MIME_TYPES, new String[] { "image/jpeg", "image/png", "image/webp" }); }
-        i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, !"text".equals(kind));
+        i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(call, i, "pickFilesResult");
     }
 

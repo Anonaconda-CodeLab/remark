@@ -90,3 +90,15 @@ test('test builds: a separate app with the public test key; release builds never
   assert.match(r('.gitignore'), /^\*\.keystore$[\s\S]*^!mobile\/android\/test\.keystore$/m, 'only the test key is an exception');
   assert.ok(existsSync(new URL('../mobile/android/test.keystore', import.meta.url)));
 });
+
+test('security review 13 Nov 2026: honest docs, a checked clipboard copy, a plugin with only what Remark uses', () => {
+  const sec = r('SECURITY.md');
+  assert.ok(!/mosaic|read again|kinds the person chose/i.test(sec), 'no Redact-only features described');
+  assert.match(sec, /Covers are solid only/);
+  assert.match(r('docs/MANUAL.md'), /syncs the clipboard to other\s+devices/, 'the manual is honest about synced clipboards');
+  const copy = r('src/save.js').split("$('btnCopy').onclick")[1].split('};')[0];
+  assert.ok(copy.indexOf('Clean.clean(') > 0 && copy.indexOf('Clean.inspect(') > copy.indexOf('Clean.clean('), 'a copied PNG is cleaned, then inspected');
+  const plugin = r('mobile/android/app/src/main/java/com/anonacondacodelab/remark/RemarkPlugin.java');
+  assert.ok(!/"text"|text\/plain/.test(plugin), 'no text-file picker');
+  assert.ok(!/Redact/.test(r('mobile/android/app/src/main/AndroidManifest.xml')));
+});

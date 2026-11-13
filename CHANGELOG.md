@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.2
+Fixes from the private security review (13 Nov 2026):
+- Copy picture: a JPEG copied as PNG now goes through Unmarked's cleaner and inspector too, like every saved file;
+  if anything were left, it isn't copied.
+- The manual says that a copied picture goes wherever your system syncs the clipboard (Windows clipboard sync,
+  Apple's Universal Clipboard); use Save if that matters.
+- SECURITY.md no longer describes two Redact features Remark doesn't have (mosaic covers, finding things again in
+  the saved picture); covers are solid only, and Redact is the tool for faces and automatic finding.
+- Android: the file picker offers only pictures and Browse files (the unused text-file option is gone); a comment
+  named Redact.
+
 ## 0.1.1
 - Callout: after typing, the callout stays selected, so its round handle shows and can be dragged straight to
   what it's about (it used to be deselected, hiding the handle). The hint says so.
