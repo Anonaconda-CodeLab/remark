@@ -15,7 +15,7 @@ const RemarkApp = (() => {
   const plural = (n, one, many) => `${n} ${n === 1 ? one : many || one + 's'}`;
 
   // ---------- settings: kept only when the person asks ----------
-  const SET_KEY = 'remark.settings', TEXTS_KEY = 'remark.texts';
+  const SET_KEY = 'remark.settings', TEXTS_KEY = 'remark.texts', TEXT_MAX = 200;   // recent texts: at most 200 characters each
   const COLOURS = Object.keys(globalThis.RemarkMarks.COLOURS);
   const settings = { format: 'auto', names: 'plain', colour: 'red', tstyle: 'label', remember: false, rememberTexts: false };
   try {
@@ -60,9 +60,9 @@ const RemarkApp = (() => {
 
   // ---------- recent texts: the last few things typed, for one tap next time ----------
   const state = { pics: [], texts: [], queue: Promise.resolve(), queued: 0, nativeIds: new Set(), next: 1, openFirst: false };
-  try { if (settings.remember && settings.rememberTexts) { const t = JSON.parse(localStorage.getItem(TEXTS_KEY) || '[]'); if (Array.isArray(t)) state.texts = t.filter(x => typeof x === 'string' && x.length <= 200).slice(0, 8); } } catch (e) { /* storage off */ }
+  try { if (settings.remember && settings.rememberTexts) { const t = JSON.parse(localStorage.getItem(TEXTS_KEY) || '[]'); if (Array.isArray(t)) state.texts = t.filter(x => typeof x === 'string' && x.length <= TEXT_MAX).slice(0, 8); } } catch (e) { /* storage off */ }
   function rememberText(t) {
-    t = String(t || '').trim(); if (!t) return;
+    t = String(t || '').trim(); if (!t || t.length > TEXT_MAX) return;   // long texts aren't kept as one-tap chips
     state.texts = [t].concat(state.texts.filter(x => x !== t)).slice(0, 8);
     saveSettings();
   }
@@ -135,9 +135,10 @@ const RemarkApp = (() => {
       // the thumbnail, made here and kept small
       const s = 160 / Math.max(pic.w, pic.h), tc = new OffscreenCanvas(Math.max(1, Math.round(pic.w * s)), Math.max(1, Math.round(pic.h * s)));
       tc.getContext('2d').drawImage(bitmap, 0, 0, tc.width, tc.height);
-      pic.thumb = URL.createObjectURL(await tc.convertToBlob({ type: 'image/jpeg', quality: 0.8 }));
+      const thumb = await tc.convertToBlob({ type: 'image/jpeg', quality: 0.8 });
+      if (pic.removed) return;   // closed while it was opening: no thumbnail address to let go of later
+      pic.thumb = URL.createObjectURL(thumb);
       el.querySelector('img').src = pic.thumb;
-      if (pic.removed) return;
       pic.ready = true;
       describe(pic);
       if (state.openFirst && state.pics[0] === pic && current === 'scrHome') { state.openFirst = false; RemarkEditor.open(pic); }

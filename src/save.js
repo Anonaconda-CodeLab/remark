@@ -61,6 +61,7 @@ window.RemarkSave = (() => {
     $('checkProgress').hidden = false; $('checkImg').hidden = true; $('saveRow').hidden = true; $('btnCheckNext').hidden = true;
     $('origNote').hidden = true; $('saveHint').textContent = ''; $('checkList').replaceChildren();
     if ($('donateCard')) $('donateCard').hidden = true;
+    clearPreview();
     let url = '';
     try {
       await document.fonts.ready;
@@ -74,6 +75,7 @@ window.RemarkSave = (() => {
       // decoded again, pixel by pixel
       const back = await createImageBitmap(new Blob([out], { type: mime }));
       const c2 = new OffscreenCanvas(W, H), g2 = c2.getContext('2d', { willReadFrequently: true });
+      if (token !== cur) { back.close(); return; }   // another picture's check started meanwhile
       g2.drawImage(back, 0, 0); back.close();
       const saved = g2.getImageData(0, 0, W, H).data;
       c2.width = c2.height = 1;
@@ -145,33 +147,46 @@ window.RemarkSave = (() => {
   const canShare = mime => NATIVE || (() => { try { return !!(navigator.canShare && navigator.canShare({ files: [new File([new Uint8Array(1)], 'x', { type: mime })] })); } catch (e) { return false; } })();
   // Copy picture (computers): pasted straight into a chat or an email. Browsers copy pictures as PNG only.
   const canCopy = () => !NATIVE && !!(navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) && !matchMedia('(pointer: coarse)').matches;
-  function saved() {
-    const r = cur; r.saved = true; r.pic.done = true; r.pic.el.classList.add('done');
+  // the picture shown on the check screen: its address is let go before another takes its place
+  function clearPreview() {
+    const img = $('checkImg');
+    if (img.src.startsWith('blob:')) URL.revokeObjectURL(img.src);
+    img.removeAttribute('src');
+  }
+  // r: the result that was saved, shared or copied (the person may have moved on while it was being handed over)
+  function saved(r) {
+    r.saved = true; r.pic.done = true; r.pic.el.classList.add('done');
+    r.pic.savedAs = JSON.stringify({ marks: r.pic.marks, crop: r.pic.crop });   // as the editor's snapshots
+    countUse();
+    if (cur !== r) return;
     $('btnSave').textContent = 'Save a copy';
     const next = A.state.pics.find(p => p.ready && !p.done && p !== r.pic);
     $('btnCheckNext').hidden = !next;
-    countUse();
   }
-  $('btnSave').onclick = async () => {
-    const r = cur; if (!r || !r.bytes) return;
+  // one hand-over at a time: a second tap on Save, Share or Copy waits until the first has finished
+  let busy = false;
+  const once = fn => async () => {
+    const r = cur; if (busy || !r || !r.bytes) return;
+    busy = true; for (const id of ['btnSave', 'btnShare', 'btnCopy']) $(id).disabled = true;
+    try { await fn(r); } finally { busy = false; for (const id of ['btnSave', 'btnShare', 'btnCopy']) $(id).disabled = false; }
+  };
+  $('btnSave').onclick = once(async r => {
     const how = await saveAs(r.name, r.bytes, r.mime, r.pic.uri);
-    if (how === 'saved') { $('saveHint').textContent = ''; saved(); }
-    else if (how === 'download') {
+    if (how === 'saved') { if (cur === r) $('saveHint').textContent = ''; saved(r); }
+    else if (how === 'download' && cur === r) {
       $('saveHint').textContent = 'Handed to your browser to download. If it asked and you cancelled, tap Save again.';
       const next = A.state.pics.find(p => p.ready && !p.done && p !== r.pic);
       $('btnCheckNext').hidden = !next;
     }
-  };
-  $('btnShare').onclick = async () => {
-    const r = cur; if (!r || !r.bytes) return;
+  });
+  $('btnShare').onclick = once(async r => {
     try {
       if (NATIVE) await RemarkNative.share([{ name: r.name, bytes: r.bytes, mime: r.mime }]);
       else await navigator.share({ files: [new File([r.bytes], r.name, { type: r.mime })] });
-      saved();
+      saved(r);
     } catch (e) { if (!e || e.name !== 'AbortError') A.toast('Could not share: ' + (e && e.message || e)); }
-  };
-  $('btnCopy').onclick = async () => {
-    const r = cur; if (!r || !r.bytes) return;
+  });
+  $('btnCopy').onclick = once(async r => {
     try {
       // a JPEG is copied as a PNG made from the clean file's pixels; that PNG goes through the cleaner and the
       // inspector too, like every file Remark hands on (the promise keeps the click's permission to copy)
@@ -185,20 +200,19 @@ window.RemarkSave = (() => {
       })();
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]);
       A.toast('Copied. Paste it into a chat or an email.');
-      saved();
+      saved(r);
     } catch (e) { A.toast('Could not copy: ' + (e && e.message || e)); }
-  };
+  });
   function back() {
     if (cur && cur.bytes && !cur.saved && !confirm('Go back without saving? You can save again afterwards.')) return;
     const pic = cur && cur.pic; cur = null;
-    if ($('checkImg').src.startsWith('blob:')) URL.revokeObjectURL($('checkImg').src);
-    $('checkImg').removeAttribute('src');
+    clearPreview();
     if (pic && !pic.removed) RemarkEditor.open(pic); else A.show('scrHome');
   }
   $('btnCheckBack').onclick = back;
   $('btnCheckNext').onclick = () => {
     const r = cur, next = A.state.pics.find(p => p.ready && !p.done && p !== (r && r.pic));
-    cur = null; if ($('checkImg').src.startsWith('blob:')) URL.revokeObjectURL($('checkImg').src);
+    cur = null; clearPreview();
     if (next) RemarkEditor.open(next); else A.show('scrHome');
   };
 

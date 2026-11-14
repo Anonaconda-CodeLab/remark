@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.4
+Fixes from CodeRabbit's full review (PR #1, 14 Nov 2026):
+- **Pinch to zoom works on phones.** Two fingers on the picture threw an error on every move, so nothing zoomed.
+- Dragging a corner of a box, circle or cover past the opposite side keeps that opposite corner in place.
+- A picture saved and then changed again (an edit, Undo, Redo, a crop) asks before it is closed, as before saving.
+- Save, Share and Copy picture: a second tap waits until the first has finished, so two saves can't mix their files.
+- Android: each share gets a private folder of its own, never reused, so an app that received an earlier picture can't
+  read a later one.
+- Switching pictures while one is still opening or being checked no longer lets the late result show up for the other
+  picture; the check screen lets go of the previous preview, and a picture closed while opening keeps no thumbnail.
+- Recent texts: one limit (200 characters) for keeping and restoring them.
+- Build: refuses to empty the project itself or one of its folders as the output folder.
+- Release workflow: one publication per pre-release at a time, and an old pre-release tag is removed rather than
+  ignored, so a new test build can't end up on an old commit.
+- The bundled Instrument Sans and IBM Plex Mono fonts are recorded with their npm releases and checksums (NOTICE.md,
+  tested).
+
 ## 0.1.3
 - Opened inside LINE's built-in browser (from a link in a chat), Remark shows a small banner at the top: LINE's
   browser can't save or share pictures, with **Open in your browser**, which opens the same address in the phone's

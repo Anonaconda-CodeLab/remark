@@ -1,5 +1,20 @@
 {
  "files": {
+  "src/fonts/InstrumentSans-latin-variable.woff2": {
+   "from": "npm @fontsource-variable/instrument-sans 5.3.0, files/instrument-sans-latin-wdth-normal.woff2 (as in Redact 1.0.0)",
+   "licence": "OFL-1.1",
+   "sha256": "8b74e9bc6e415d564a5ffd32125c92ffd50b1635043e77543cb871e0a3cfcaf2"
+  },
+  "src/fonts/IBMPlexMono-latin-400.woff2": {
+   "from": "npm @fontsource/ibm-plex-mono 5.3.0, files/ibm-plex-mono-latin-400-normal.woff2 (as in Redact 1.0.0)",
+   "licence": "OFL-1.1",
+   "sha256": "08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7"
+  },
+  "src/fonts/IBMPlexMono-latin-500.woff2": {
+   "from": "npm @fontsource/ibm-plex-mono 5.3.0, files/ibm-plex-mono-latin-500-normal.woff2 (as in Redact 1.0.0)",
+   "licence": "OFL-1.1",
+   "sha256": "01d285447409c8a588692162439a038b8cbd7871309ee20267b0d2d91c6e8e22"
+  },
   "src/fonts/IBMPlexSansThai-thai-600.woff2": {
    "from": "npm @fontsource/ibm-plex-sans-thai 5.3.0, files/ibm-plex-sans-thai-thai-600-normal.woff2",
    "licence": "OFL-1.1",

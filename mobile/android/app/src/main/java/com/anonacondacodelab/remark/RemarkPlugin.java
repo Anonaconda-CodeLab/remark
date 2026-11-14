@@ -267,6 +267,9 @@ public class RemarkPlugin extends Plugin {
 
     // ---------- sharing: copy into the private share folder, then open the share sheet ----------
     private File shareDir() { return new File(getContext().getCacheDir(), "share"); }
+    /* Each share gets a folder of its own (share/<random>/<n>/name), never used again: an app that received an earlier
+       share keeps its read grant while it stays open, so a reused address could let it read a later share. */
+    private File shareCur;
 
     private static void deleteTree(File f) {
         File[] kids = f.listFiles();
@@ -285,8 +288,9 @@ public class RemarkPlugin extends Plugin {
     public void shareBegin(PluginCall call) {
         File d = shareDir();
         deleteTree(d);   // nothing from an earlier share is kept
+        shareCur = new File(d, java.util.UUID.randomUUID().toString());
         //noinspection ResultOfMethodCallIgnored
-        d.mkdirs();
+        shareCur.mkdirs();
         call.resolve();
     }
 
@@ -295,7 +299,8 @@ public class RemarkPlugin extends Plugin {
         int index = call.getInt("index", 0);
         boolean first = Boolean.TRUE.equals(call.getBoolean("first", false));
         try {
-            File dir = new File(shareDir(), String.valueOf(index));
+            if (shareCur == null) { call.reject("share not started"); return; }
+            File dir = new File(shareCur, String.valueOf(index));
             if (first) { deleteTree(dir); }
             //noinspection ResultOfMethodCallIgnored
             dir.mkdirs();
@@ -313,11 +318,12 @@ public class RemarkPlugin extends Plugin {
     public void shareSend(PluginCall call) {
         int count = call.getInt("count", 0);
         JSArray mimes = call.getArray("mimes", new JSArray());
+        if (shareCur == null) { call.reject("share not started"); return; }
         try {
             ArrayList<Uri> uris = new ArrayList<>();
             String type = null;
             for (int i = 0; i < count; i++) {
-                File[] files = new File(shareDir(), String.valueOf(i)).listFiles();
+                File[] files = new File(shareCur, String.valueOf(i)).listFiles();
                 if (files == null || files.length == 0) continue;
                 uris.add(FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", files[0]));
                 String m = i < mimes.length() ? mimes.getString(i) : "application/octet-stream";

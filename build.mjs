@@ -6,7 +6,7 @@
 // dist/ is not committed: Cloudflare Pages runs this build and publishes dist/ (with dist/_headers), and the Android
 // workflow does the same. Adapted from Redact's build.mjs (1.0.0, f84acd6), without the detection engines.
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync, readdirSync, rmSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
@@ -160,6 +160,14 @@ ${js}
 </body></html>
 `;
 
+// the output folder is emptied first, so it must never be the checkout, a folder above it, or one of the source folders
+{
+  const within = (a, b) => { const r = relative(b, a); return r === '' || (!r.startsWith('..') && !isAbsolute(r)); };
+  const own = ['src', 'docs', 'tests', 'mobile', '.github', '.git'].map(d => join(root, d));
+  if (within(root, DIST) || own.some(d => within(DIST, d) || within(d, DIST))) {
+    console.error(`build: refusing to empty ${DIST} (it holds or is inside this project's own files)`); process.exit(1);
+  }
+}
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST, { recursive: true });
 const file = join(DIST, 'index.html');

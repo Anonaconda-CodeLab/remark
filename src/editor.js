@@ -32,8 +32,9 @@ window.RemarkEditor = (() => {
       const c = new OffscreenCanvas(w, h), g = c.getContext('2d', { willReadFrequently: true });
       g.drawImage(bm, 0, 0, w, h); bm.close();
       if (token !== ed.token) return;
-      ed.disp = g.getImageData(0, 0, w, h); ed.ds = w / pic.w;
-      ed.bmp = await createImageBitmap(c);
+      const disp = g.getImageData(0, 0, w, h), bmp = await createImageBitmap(c);
+      if (token !== ed.token) { bmp.close(); return; }   // another picture was opened meanwhile
+      ed.disp = disp; ed.ds = w / pic.w; ed.bmp = bmp;
       fitView(); draw();
       hint();
     } catch (e) { A.toast('Could not show this picture: ' + (e && e.message || e)); }
@@ -60,6 +61,9 @@ window.RemarkEditor = (() => {
   $('btnRedo').onclick = () => { endText(); const p = ed.pic; if (!p.fut.length) return; p.hist.push(snap(p)); restore(p, p.fut.pop()); ed.sel = null; changed(); };
   function changed() {
     if (!ed.pic) return;
+    // saved, then changed again (an edit, Undo, Redo, a crop): closing it asks first again
+    const p = ed.pic;
+    if (p.done && p.savedAs !== snap(p)) { p.done = false; if (p.el) p.el.classList.remove('done'); }
     if (A.current === 'scrEdit') { head(); opts(); draw(); }
     A.describe(ed.pic);
   }
@@ -314,7 +318,7 @@ window.RemarkEditor = (() => {
     }
     // a handle of the selected mark, then any mark, then the tool on empty space
     const hi = handleAt(sx, sy);
-    if (hi >= 0) { ed.drag = { mode: 'handle', i: hi, start, m: selMark(), undo: true }; return; }
+    if (hi >= 0) { const m = selMark(); ed.drag = { mode: 'handle', i: hi, start, m, anchor: M.anchor(m, hi), undo: true }; return; }
     const m = hitAt(px, py);
     if (m) { ed.drag = { mode: 'move', start, m, last: [px, py], wasSel: ed.sel === m.id, undo: true }; return; }
     if (['arrow', 'line', 'ellipse', 'rect', 'cover', 'highlight', 'pen'].includes(ed.tool)) {
@@ -329,7 +333,7 @@ window.RemarkEditor = (() => {
     if (!pointers.has(e.pointerId) || !ed.drag) return;
     pointers.set(e.pointerId, pos(e));
     const d = ed.drag, [sx, sy] = pos(e), [px, py] = toPic(sx, sy);
-    const far = Math.hypot(sx - d.start[0], sy - d.start[1]) > 6;
+    const far = !!d.start && Math.hypot(sx - d.start[0], sy - d.start[1]) > 6;   // a pinch has no starting point
     if (d.mode === 'pinch') {
       if (pointers.size < 2) return;
       const [a, b] = [...pointers.values()], dist = Math.hypot(a[0] - b[0], a[1] - b[1]), mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
@@ -345,7 +349,7 @@ window.RemarkEditor = (() => {
       M.move(d.m, px - d.last[0], py - d.last[1]); d.last = [px, py];
     } else if (d.mode === 'handle') {
       if (!d.moved) { remember(); d.moved = true; }
-      M.dragHandle(d.m, d.i, ...clampPic(px, py));
+      M.dragHandle(d.m, d.i, ...clampPic(px, py), d.anchor);
     } else if (d.mode === 'draw') {
       const t = ed.temp, [cx, cy] = clampPic(px, py);
       if (t.pts) { const [lx, ly] = t.pts[t.pts.length - 1]; if (Math.hypot(cx - lx, cy - ly) * ed.v.s > 2) t.pts.push([cx, cy]); }

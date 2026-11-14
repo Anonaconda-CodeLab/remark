@@ -1,6 +1,6 @@
 {
   "name": "remark",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Write notes, callouts, arrows and highlights on photos and screenshots, then save or share a clean copy, entirely on your device.",
   "private": true,
   "type": "module",

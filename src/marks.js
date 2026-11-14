@@ -19,7 +19,7 @@
 
    API (on the global RemarkMarks):
      COLOURS, SIZES, KINDS, unit(W, H), ink(colour), numbers(marks), bounds(m, U, measure), hit(m, x, y, U, slack, measure),
-     handles(m, U, measure), dragHandle(m, i, x, y), move(m, dx, dy), normalise(m), drawMark(ctx, m, U, n, coverRgb),
+     handles(m, U, measure), anchor(m, i), dragHandle(m, i, x, y, fixed), move(m, dx, dy), normalise(m), drawMark(ctx, m, U, n, coverRgb),
      textBox(m, U, measure)
    U is the picture's unit (unit(W, H)): sizes scale with the picture, so the first tap gives readable text on a
    12-megapixel photo and on a phone screenshot alike. measure(text, fontPx) gives a text width in pixels. */
@@ -111,12 +111,15 @@
     }
     return [];
   }
-  function dragHandle(m, i, x, y) {
+  // the corner opposite handle i of a box, circle or cover; it stays put while that handle is dragged
+  const anchor = (m, i) => m && m.w !== undefined && m.kind !== 'text' && m.kind !== 'callout' ? [i % 2 === 0 ? m.x + m.w : m.x, i < 2 ? m.y + m.h : m.y] : null;
+  function dragHandle(m, i, x, y, fixed) {
     if (m.kind === 'arrow' || m.kind === 'line') { if (i === 0) { m.x1 = x; m.y1 = y; } else { m.x2 = x; m.y2 = y; } }
     else if (m.kind === 'callout') { m.tx = x; m.ty = y; }
     else if (m.w !== undefined) {
-      // the opposite corner stays put; normalise() afterwards makes w and h positive again
-      const ox = i % 2 === 0 ? m.x + m.w : m.x, oy = i < 2 ? m.y + m.h : m.y;
+      // the opposite corner stays put: the one noted when the drag began (fixed), so a corner dragged across the other
+      // side keeps the same box; normalise() afterwards makes w and h positive again
+      const [ox, oy] = fixed || anchor(m, i);
       m.x = Math.min(x, ox); m.y = Math.min(y, oy); m.w = Math.abs(ox - x); m.h = Math.abs(oy - y);
     }
   }
@@ -238,5 +241,5 @@
     ctx.restore();
   }
 
-  root.RemarkMarks = { COLOURS, SIZES, KINDS, FONT, font, unit, ink, lum, numbers, bounds, hit, handles, dragHandle, move, normalise, drawMark, textBox, fontPx, lineW, numR, segDist, arrowHead };
+  root.RemarkMarks = { COLOURS, SIZES, KINDS, FONT, font, unit, ink, lum, numbers, bounds, hit, handles, anchor, dragHandle, move, normalise, drawMark, textBox, fontPx, lineW, numR, segDist, arrowHead };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

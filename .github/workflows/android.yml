@@ -143,6 +143,10 @@ jobs:
     # official release (by hand, main only), android-test (push to main) or android-preview (by hand on another branch)
     if: inputs.release || (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
     runs-on: ubuntu-latest
+    # one publication per destination at a time, whichever branch it comes from, and never cancelled halfway
+    concurrency:
+      group: android-publish-${{ inputs.release && 'release' || (github.ref == 'refs/heads/main' && 'android-test' || 'android-preview') }}
+      cancel-in-progress: false
     permissions:
       contents: write   # the only job that can change the repository (create the tag and release)
     env:
@@ -184,14 +188,30 @@ jobs:
       - name: Publish as the android-test pre-release
         if: ${{ !inputs.release && github.ref == 'refs/heads/main' }}
         run: |
-          gh release delete android-test --yes --cleanup-tag || true
+          # the old pre-release and its tag go first, each on its own: a tag left behind by an interrupted run would
+          # otherwise keep the new release on the old commit. Only "not there" is accepted; any other error stops.
+          clear_prerelease() {
+            if gh release view "$1" >/dev/null 2>&1; then gh release delete "$1" --yes; fi
+            if out=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$1" 2>&1); then
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/$1" --silent
+            elif ! grep -q 'HTTP 404' <<<"$out"; then echo "::error::Could not check the old $1 tag: $out"; exit 1; fi
+          }
+          clear_prerelease android-test
           gh release create android-test "$APK_NAME-$VER.apk" --prerelease --latest=false --target "$GITHUB_SHA" \
             --title "Android test build $VER (build ${{ github.run_number }})" \
             --notes "Test build of the Android app, made automatically from commit ${GITHUB_SHA::7}. Install over the previous test build."
       - name: Publish as the android-preview pre-release (a branch built by hand, for testing before it is merged)
         if: ${{ !inputs.release && github.ref != 'refs/heads/main' }}
         run: |
-          gh release delete android-preview --yes --cleanup-tag || true
+          # the old pre-release and its tag go first, each on its own: a tag left behind by an interrupted run would
+          # otherwise keep the new release on the old commit. Only "not there" is accepted; any other error stops.
+          clear_prerelease() {
+            if gh release view "$1" >/dev/null 2>&1; then gh release delete "$1" --yes; fi
+            if out=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$1" 2>&1); then
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/$1" --silent
+            elif ! grep -q 'HTTP 404' <<<"$out"; then echo "::error::Could not check the old $1 tag: $out"; exit 1; fi
+          }
+          clear_prerelease android-preview
           gh release create android-preview "$APK_NAME-$VER.apk" --prerelease --latest=false --target "$GITHUB_SHA" \
             --title "Android preview $VER from ${GITHUB_REF_NAME} (build ${{ github.run_number }})" \
             --notes "Preview of unreleased changes from the ${GITHUB_REF_NAME} branch, commit ${GITHUB_SHA::7}. For testing only."

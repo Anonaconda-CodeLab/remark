@@ -9,8 +9,8 @@ file against the SHA-256 of the release named here, listed in `tests/origins.jso
 
 | Component | File | Version | Licence | SHA-256 (as released) |
 |---|---|---|---|---|
-| Instrument Sans typeface | `src/fonts/InstrumentSans-latin-variable.woff2` | as in Redact 1.0.0 | SIL Open Font License 1.1 ([src/fonts/OFL-InstrumentSans.txt](src/fonts/OFL-InstrumentSans.txt)) | |
-| IBM Plex Mono typeface | `src/fonts/IBMPlexMono-latin-*.woff2` | as in Redact 1.0.0 | SIL Open Font License 1.1 ([src/fonts/OFL-IBMPlexMono.txt](src/fonts/OFL-IBMPlexMono.txt)) | |
+| [Instrument Sans](https://github.com/Instrument/instrument-sans) typeface, Latin letters, variable (npm `@fontsource-variable/instrument-sans` 5.3.0, `files/instrument-sans-latin-wdth-normal.woff2`) | `src/fonts/InstrumentSans-latin-variable.woff2` | 5.3.0 | SIL Open Font License 1.1 ([src/fonts/OFL-InstrumentSans.txt](src/fonts/OFL-InstrumentSans.txt)) | `8b74e9bc6e415d564a5ffd32125c92ffd50b1635043e77543cb871e0a3cfcaf2` |
+| [IBM Plex Mono](https://github.com/IBM/plex) typeface, Latin letters, weights 400 and 500 (npm `@fontsource/ibm-plex-mono` 5.3.0, `files/ibm-plex-mono-latin-400-normal.woff2` and `-500-normal.woff2`) | `src/fonts/IBMPlexMono-latin-400.woff2`, `src/fonts/IBMPlexMono-latin-500.woff2` | 5.3.0 | SIL Open Font License 1.1 ([src/fonts/OFL-IBMPlexMono.txt](src/fonts/OFL-IBMPlexMono.txt)) | `08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7` (400), `01d285447409c8a588692162439a038b8cbd7871309ee20267b0d2d91c6e8e22` (500) |
 | [IBM Plex Sans Thai](https://github.com/IBM/plex) typeface, Thai letters, weight 600 (npm `@fontsource/ibm-plex-sans-thai` 5.3.0, `files/ibm-plex-sans-thai-thai-600-normal.woff2`) | `IBMPlexSansThai-thai-600.woff2` | 5.3.0 | SIL Open Font License 1.1 ([src/fonts/OFL-IBMPlexSansThai.txt](src/fonts/OFL-IBMPlexSansThai.txt)) | `ea935955dc3bccb684f8fb772dbd429250dd0d3dfee9483995a3ee3456471df8` |
 
 From the studio's other apps (Anonaconda Code Lab, GPL-3.0-or-later), checked by tests to be unchanged copies:
