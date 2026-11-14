@@ -1,0 +1,55 @@
+# CodeRabbit settings for Remark: reviews pull requests into main (the same shape as Flatbed's, Unmarked's and Rounds')
+language: en-GB
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "review-base"
+  # built output, fonts, unchanged copies from the studio's other apps and Android tooling: not this app's code, or
+  # generated from it (their checksums are tested against tests/origins.json)
+  path_filters:
+    - "!dist/**"
+    - "!src/fonts/**"
+    - "!src/clean.js"
+    - "!src/paint.js"
+    - "!mobile/package-lock.json"
+    - "!mobile/android/gradle/**"
+    - "!mobile/android/gradlew"
+    - "!mobile/android/gradlew.bat"
+    - "!mobile/android/app/src/main/res/mipmap-*/**"
+    - "!**/*.png"
+    - "!**/*.woff2"
+  path_instructions:
+    - path: "**"
+      instructions: |
+        Remark adds text, callouts, arrows, shapes, numbers, highlights, pen strokes and solid covers to photos and
+        screenshots, then saves a clean copy, entirely on the device. By design it has no network access: the page's
+        Content Security Policy has connect-src 'none', and the Android app has no INTERNET permission. Nothing is
+        uploaded; only settings and (if asked) recent texts are stored. Every picture is untrusted input. Focus on:
+        anything that could send data off the device; typed text or file names reaching the page as HTML; input that
+        could crash, hang or run out of memory; covers that might leave original pixels behind; and anything from the
+        original file (metadata) reaching the saved one.
+    - path: "src/marks.js"
+      instructions: |
+        Mark geometry, hit-testing and drawing, shared by the screen and the full-size save. Check that drawing at
+        another scale gives the same picture, that degenerate marks (zero length, one point, empty text) don't throw,
+        and that sizes stay sensible for very small and very large pictures.
+    - path: "src/save.js"
+      instructions: |
+        The clean copy: crop, marks, then covers painted last, encode, clean, decode again and check. Check coordinate
+        mapping with a crop, that covers are always painted after the marks, and that Save never appears unless every
+        check passed.
+    - path: "src/picture.js"
+      instructions: |
+        An exact copy of Flatbed's picture-size check (a test compares it); changes are made in Flatbed first.
+        src/clean.js (Unmarked's cleaner), src/paint.js and the fill in src/fill.js (Redact's) are exact copies too,
+        reviewed in their own repositories.
+    - path: "src/app.js"
+      instructions: |
+        Everything from a file is untrusted: it must never reach innerHTML. File names and typed text are shown only
+        with textContent.
