@@ -4,7 +4,7 @@
 // workflow's pre-release clean-up.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, mkdtempSync, existsSync, rmSync, symlinkSync, mkdirSync } from 'node:fs';
+import { readFileSync, mkdtempSync, existsSync, rmSync, symlinkSync, cpSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -62,6 +62,7 @@ test('check screen: a late check never touches the preview; the old preview is l
   assert.match(s, /function saved\(r\) \{/);
   assert.ok(!/saved\(\);/.test(s), 'every hand-over marks its own result');
   assert.match(s, /if \(cur !== r\) return;/);
+  assert.match(s, /countUse\(cur === r\);/, 'the donation card only on the current result\'s screen');
   for (const b of ['btnSave', 'btnShare', 'btnCopy']) assert.match(s, new RegExp(`\\$\\('${b}'\\)\\.onclick = once\\(`), b + ' waits for the one before');
   assert.match(s, /if \(busy \|\| !r \|\| !r\.bytes\) return;/);
   assert.match(s, /finally \{ busy = false;/);
@@ -85,18 +86,24 @@ test('Android share: a folder of its own for each share, never reused', () => {
 });
 
 test('build: refuses to empty the project itself or one of its folders; a folder elsewhere is fine', () => {
-  // through a link to the checkout, too
-  const links = mkdtempSync(join(tmpdir(), 'remark-link-')); symlinkSync(root, join(links, 'checkout'));
-  for (const bad of ['.', '..', 'src', 'src/out', 'src/..keep', 'tests', join(links, 'checkout'), join(links, 'checkout', 'src')]) {
-    const p = spawnSync(process.execPath, ['build.mjs'], { cwd: root, env: { ...process.env, REMARK_DIST: bad }, encoding: 'utf8' });
-    assert.notEqual(p.status, 0, bad); assert.match(p.stderr, /refusing to empty/, bad);
+  // on a scratch copy of the project, so a broken check could never delete the real one
+  const tmp = mkdtempSync(join(tmpdir(), 'remark-guard-')), proj = join(tmp, 'remark');
+  cpSync(root, proj, { recursive: true, filter: f => !/[\\/](\.git|dist|node_modules)$/.test(f) });
+  symlinkSync(proj, join(tmp, 'checkout'));
+  // a project whose own folder is a link (src -> elsewhere) is protected through the link too
+  const linked = join(tmp, 'linked'); cpSync(proj, linked, { recursive: true });
+  rmSync(join(linked, 'src'), { recursive: true }); symlinkSync(join(proj, 'src'), join(linked, 'src'));
+  const build = (cwd, out) => spawnSync(process.execPath, ['build.mjs'], { cwd, env: { ...process.env, REMARK_DIST: out }, encoding: 'utf8' });
+  for (const bad of ['.', '..', 'src', 'src/out', 'src/..keep', 'tests', join(tmp, 'checkout'), join(tmp, 'checkout', 'src')]) {
+    const p = build(proj, bad); assert.notEqual(p.status, 0, bad); assert.match(p.stderr, /refusing to empty/, bad);
   }
-  assert.ok(existsSync(join(root, 'src', 'app.js')) && existsSync(join(root, 'tests', 'review.test.mjs')), 'nothing was deleted');
-  rmSync(links, { recursive: true, force: true });
-  const out = mkdtempSync(join(tmpdir(), 'remark-dist-'));
-  const ok = spawnSync(process.execPath, ['build.mjs'], { cwd: root, env: { ...process.env, REMARK_DIST: out }, encoding: 'utf8' });
-  assert.equal(ok.status, 0, ok.stderr); assert.ok(existsSync(join(out, 'index.html')));
-  rmSync(out, { recursive: true, force: true });
+  for (const bad of [join(proj, 'src'), join(proj, 'src', 'out')]) {   // the target of linked/src
+    const p = build(linked, bad); assert.notEqual(p.status, 0, bad); assert.match(p.stderr, /refusing to empty/, bad);
+  }
+  assert.ok(existsSync(join(proj, 'src', 'app.js')) && existsSync(join(proj, 'tests', 'review.test.mjs')), 'nothing was deleted');
+  const ok = build(proj, join(tmp, 'out'));
+  assert.equal(ok.status, 0, ok.stderr); assert.ok(existsSync(join(tmp, 'out', 'index.html')));
+  rmSync(tmp, { recursive: true, force: true });
 });
 
 test('release workflow: one publication per destination at a time; an old pre-release tag is removed, not ignored', () => {

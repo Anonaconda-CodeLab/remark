@@ -159,7 +159,7 @@ window.RemarkSave = (() => {
     r.saved = true; r.pic.savedAs = r.made;
     // saved means the picture as it is now is in that file: changed again meanwhile, it still counts as unsaved
     if (JSON.stringify({ marks: r.pic.marks, crop: r.pic.crop }) === r.made) { r.pic.done = true; r.pic.el.classList.add('done'); }
-    countUse();
+    countUse(cur === r);
     if (cur !== r) return;
     $('btnSave').textContent = 'Save a copy';
     const next = A.state.pics.find(p => p.ready && !p.done && p !== r.pic);
@@ -224,10 +224,12 @@ window.RemarkSave = (() => {
   const SUP_KEY = 'remark.support', DONATE_AT = [20, 50, 100];
   const getSup = () => { try { return JSON.parse(localStorage.getItem(SUP_KEY) || '{}') || {}; } catch (e) { return {}; } };
   const putSup = p => { try { localStorage.setItem(SUP_KEY, JSON.stringify(Object.assign(getSup(), p))); } catch (e) {} };
-  function countUse() {
+  // show: false when the person has moved on to another picture (the use counts; the card waits for the next one)
+  function countUse(show) {
     const c = $('donateCard'); if (!c) return;
     const s = getSup(), n = (+s.uses || 0) + 1, m = DONATE_AT.filter(x => n >= x).pop() || 0;
     putSup({ uses: n });
+    if (!show) return;
     c.hidden = !!s.donateDone || !m || (+s.donateSeen || 0) >= m;
     if (!c.hidden) { $('donateN').textContent = n; c.dataset.m = m; }
   }

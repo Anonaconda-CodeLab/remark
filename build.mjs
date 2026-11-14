@@ -165,7 +165,7 @@ ${js}
   // real paths (links followed, as far as the folders exist), compared folder by folder
   const real = p => { let tail = []; for (;;) { try { return join(realpathSync(p), ...tail); } catch (e) { const up = dirname(p); if (up === p) return join(p, ...tail); tail.unshift(basename(p)); p = up; } } };
   const within = (a, b) => { const r = relative(b, a); return r === '' || (r !== '..' && !r.startsWith('..' + sep) && !isAbsolute(r)); };
-  const dist = real(DIST), base = real(root), own = ['src', 'docs', 'tests', 'mobile', '.github', '.git'].map(d => join(base, d));
+  const dist = real(DIST), base = real(root), own = ['src', 'docs', 'tests', 'mobile', '.github', '.git'].map(d => real(join(root, d)));
   if (within(base, dist) || own.some(d => within(dist, d) || within(d, dist))) {
     console.error(`build: refusing to empty ${DIST} (it holds or is inside this project's own files)`); process.exit(1);
   }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.6
+- The donation card appears only on the screen of the picture that was just saved, never on another picture's.
+- Build: the output-folder check also follows links for the project's own folders; its test runs on a scratch copy.
+
 ## 0.1.5
 CodeRabbit's follow-ups on PR #1:
 - Closing a picture asks first when only its crop has changed, not just its marks.
