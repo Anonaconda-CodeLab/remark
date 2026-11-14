@@ -71,24 +71,14 @@ test('versions agree: package.json, mobile/package.json, build.gradle, CHANGELOG
   assert.match(r('mobile/android/gradle/wrapper/gradle-wrapper.properties'), /^distributionSha256Sum=[0-9a-f]{64}$/m);
 });
 
-test('debug test APK workflow (private phase): no secrets, read-only, never publishes', () => {
-  const w = r('.github/workflows/android-debug.yml');
-  assert.ok(!/secrets\.|environment:|contents: write|gh release/.test(w));
-  assert.match(w, /persist-credentials: false/);
-  assert.match(w, /npm ci --ignore-scripts/);
-  assert.match(w, /android\.permission\.INTERNET/, 'checks the APK has no internet permission');
-  assert.ok(w.indexOf('wrapper-validation@') < w.indexOf('./gradlew'), 'the Gradle wrapper is validated first');
-});
-
-test('test builds: a separate app with the public test key; release builds never use it', () => {
+test('launch: the private-phase test workflow and its public key are gone; debug builds are a separate app', () => {
+  for (const f of ['.github/workflows/android-debug.yml', 'mobile/android/test.keystore']) assert.ok(!existsSync(new URL('../' + f, import.meta.url)), f);
   const g = r('mobile/android/app/build.gradle');
-  const debug = /\n        debug \{([\s\S]*?)\n        \}/.exec(g)[1], release = /\n        release \{\n            if \(ks\) signingConfig([\s\S]*?)\n        \}/.exec(g)[0];
-  assert.match(debug, /applicationIdSuffix '\.test'/); assert.match(debug, /signingConfig signingConfigs\.test/);
-  assert.ok(!/signingConfigs\.test/.test(release), 'release is never signed with the test key');
+  assert.ok(!/signingConfigs\.test|test\.keystore/.test(g), 'no test signing settings left');
+  assert.match(/\n        debug \{([\s\S]*?)\n        \}/.exec(g)[1], /applicationIdSuffix '\.test'/);
   assert.match(r('mobile/android/app/src/debug/res/values/strings.xml'), /<string name="app_name">Remark \(test\)<\/string>/);
-  assert.match(r('.github/workflows/android-debug.yml'), /com\.anonacondacodelab\.remark\.test/);
-  assert.match(r('.gitignore'), /^\*\.keystore$[\s\S]*^!mobile\/android\/test\.keystore$/m, 'only the test key is an exception');
-  assert.ok(existsSync(new URL('../mobile/android/test.keystore', import.meta.url)));
+  assert.ok(!/!mobile\/android\/test\.keystore/.test(r('.gitignore')), 'no key file is an exception any more');
+  assert.ok(!/android-debug|private/.test(r('.github/workflows/android.yml').split('\n').slice(0, 4).join('\n')));
 });
 
 test('security review 13 Nov 2026: honest docs, a checked clipboard copy, a plugin with only what Remark uses', () => {

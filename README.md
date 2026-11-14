@@ -6,8 +6,8 @@ that reads well on any background, in English or Thai. Remark draws the marks in
 peeled off and no hidden details (where a photo was taken, which phone took it) come along. No account, no server, no
 upload.
 
-**Web app: [remark.anonacondacodelab.com](https://remark.anonacondacodelab.com)** (not launched yet). See
-`docs/MANUAL.md` for how it works.
+**Web app: [remark.anonacondacodelab.com](https://remark.anonacondacodelab.com)** · **Android app:
+[download and how to check it](https://remark.anonacondacodelab.com/android.html)** (or the [latest release](https://github.com/Anonaconda-CodeLab/remark/releases/latest)). See `docs/MANUAL.md` for how it works.
 
 ## How it works
 The whole web app is one file, `dist/index.html`, built by `node build.mjs` from `src/` (about 0.35 MB). Its Content

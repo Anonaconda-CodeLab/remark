@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.0
+First release: the web app at remark.anonacondacodelab.com and the Android app.
+- Write on photos and screenshots with text, callouts, arrows, lines, circles, boxes, numbered markers, a highlighter and
+  a pen, cover a stray detail with a solid cover, and crop; then save or share a brand-new picture, checked pixel by
+  pixel and cleaned of hidden data (where a photo was taken, which phone took it) with Unmarked's cleaner.
+- Text reads well on any background (a label in your colour), in English or Thai. Up to 20 pictures at once.
+- The Android download page is on, with the studio's signing certificate; "Also available as an Android app" on the
+  web, and "Check for updates" in the app.
+- The private-phase test app is retired: its workflow and public test key are removed (uninstall "Remark (test)"). Test
+  builds now come from the Android workflow run by hand on a branch, signed through the protected `signing` environment.
+- Before release: a private security review (fixes in 0.1.2) and CodeRabbit's full review (fixes in 0.1.4–0.1.6).
+
 ## 0.1.7
 - The hint for the tool in use now sits beside **Crop**, in the tool row's empty space, so it shows on a phone without
   scrolling (it was below the tools, just off the screen).

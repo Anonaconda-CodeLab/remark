@@ -64,18 +64,15 @@ test('the screens, the tools, the ways in, the donation card', () => {
   assert.match(html, /settings = \{[^}]*names: 'plain'/, 'and in the settings');
 });
 
-test('before launch: no Android download page or link; the build can make them', () => {
-  assert.ok(!existsSync(new URL('../dist/android.html', import.meta.url)));
-  assert.ok(!/href="\/android\.html"/.test(html));
-  const dir = mkdtempSync(join(tmpdir(), 'remark-'));
-  try {
-    execFileSync(process.execPath, ['build.mjs'], { cwd: new URL('..', import.meta.url), env: { ...process.env, REMARK_ANDROID_PAGE: '1', REMARK_DIST: dir }, stdio: 'ignore' });
-    const page = readFileSync(join(dir, 'android.html'), 'utf8'), h = readFileSync(join(dir, 'index.html'), 'utf8');
-    assert.match(page, new RegExp(`Latest version: ${pkg.version.replace(/\./g, '\\.')}`));
-    assert.match(page, /4D:6C:EA:58:94:C0:D7:D8/, 'the studio certificate fingerprint');
-    assert.match(h, /<p class="web-only app-link"><a href="\/android.html">Also available as an Android app →<\/a><\/p>/);
-    assert.match(h, /<a class="btn native-only" href="https:\/\/remark\.anonacondacodelab\.com\/android\.html\?v=/, 'Check for updates in the app');
-  } finally { rmSync(dir, { recursive: true, force: true }); }
+test('launched: the Android download page is built and linked from the web app (web only)', () => {
+  const page = dist('android.html');
+  assert.match(page, new RegExp(`Latest version: ${pkg.version.replace(/\./g, '\\.')}`));
+  assert.match(page, /your pictures never leave your phone/);
+  assert.match(page, /4D:6C:EA:58:94:C0:D7:D8/, 'the studio certificate fingerprint');
+  assert.match(html, /<p class="web-only app-link"><a href="\/android.html">Also available as an Android app →<\/a><\/p>/);
+  assert.match(html, /<a class="btn web-only" href="\/android.html">Android app<\/a>/);
+  assert.match(html, /<a class="btn native-only" href="https:\/\/remark\.anonacondacodelab\.com\/android\.html\?v=/, 'Check for updates in the app');
+  assert.match(dist('sitemap.xml'), /android\.html/);
 });
 
 test('pictures, typed text and results are kept from browser translators', () => {

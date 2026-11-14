@@ -1,6 +1,6 @@
 {
   "name": "remark-android",
-  "version": "0.1.7",
+  "version": "1.0.0",
   "private": true,
   "description": "Android build of Remark (Capacitor wrapper around ../dist)",
   "license": "GPL-3.0-or-later",

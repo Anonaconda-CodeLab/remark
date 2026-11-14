@@ -23,7 +23,7 @@ const PROJECT = {
   kofi: 'anonacondacodelab', // Ko-fi username; leave empty to hide the support link
   // Android app announced on the website: the install page (dist/android.html) and the manual's [[android]] parts.
   // Off until the launch; the APK itself is built either way.
-  androidPage: false
+  androidPage: true
 };
 // for the tests: build with or without the Android parts (REMARK_ANDROID_PAGE=1 or 0), into another folder (REMARK_DIST)
 if (process.env.REMARK_ANDROID_PAGE) PROJECT.androidPage = process.env.REMARK_ANDROID_PAGE === '1';

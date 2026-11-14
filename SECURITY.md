@@ -39,10 +39,9 @@
   protected `signing` environment, each signing approved by the owner, and official releases come from `main` only;
   the workflow fails if an APK is signed with any other key. APKs built by anyone on their own computer are signed with
   their own (or a debug) key: check the certificate fingerprint on the download page.
-- **Test builds while the repository is private** (`android-debug.yml`) are a separate app, "Remark (test)"
-  (`com.anonacondacodelab.remark.test`), signed with a public test key kept in the repository, and are never published.
-  That key can't update the official app: Android requires the same signer for the same app, and the official app is
-  `com.anonacondacodelab.remark` signed with the studio's key. The workflow and key are removed at launch.
+- **Before the 1.0.0 launch**, while the repository was private, test APKs were a separate app,
+  `com.anonacondacodelab.remark.test`, signed with a public test key; that workflow and key were removed at launch. They
+  could never update the official app, which Android only updates from the same signer.
 
 ## Known limitations
 - Only a cover hides anything. A highlighter, box, line or label over something leaves it visible.
