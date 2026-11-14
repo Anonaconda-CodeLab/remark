@@ -1,0 +1,10 @@
+{
+  "appId": "com.anonacondacodelab.remark",
+  "appName": "Remark",
+  "webDir": "../dist",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false
+  }
+}
