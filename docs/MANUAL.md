@@ -17,7 +17,8 @@ what you see: there are no layers that someone could peel off, and none of the h
    gallery or another app.[[/android]]
 2. One picture opens straight away; with several, tap the one to mark up.
 3. **Text** is ready: tap where the words go, type, and tap **Done** (or press Enter).
-4. Add anything else with the other tools (see *The tools*), then tap **Done** at the top.
+4. Add anything else with the other tools (see *The tools*), then tap **Done** at the top. To place things exactly,
+   **pinch to zoom in** (scroll on a computer) and move the picture with two fingers.
 5. Remark makes the new picture, checks it (see *Saving*) and shows it. Tap **Save** or **Share**,
    or **Copy picture** on a computer to paste it straight into a chat or an email.
 
@@ -66,7 +67,7 @@ highlighter has its own colour (yellow at first).
 - **Edit text** (or tap a selected text again) changes its words; **Delete** removes the mark.
 - Tap empty space to deselect.
 - **Undo** and **Redo** (the arrows at the top) take back any change.
-- **Zoom** with two fingers (or the mouse wheel), and move the picture with two fingers.
+- **Pinch to zoom** (or scroll with the mouse wheel), and move the picture with two fingers.
 - **‹ ›** go to the previous and next picture.
 
 On a computer, **Delete** removes the selected mark, and **Ctrl+Z** and **Ctrl+Y** undo and redo.

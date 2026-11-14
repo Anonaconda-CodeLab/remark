@@ -116,3 +116,20 @@ test('release workflow: one publication per destination at a time; an old pre-re
   assert.equal((w.match(/elif ! grep -qi 'release not found\\\|HTTP 404'/g) || []).length, 2, 'a release lookup that fails for another reason stops');
   assert.ok(!/gh release view "\$1" >\/dev\/null 2>&1; then/.test(w));
 });
+
+test('zooming is mentioned where people look: the tool hint (until the first zoom) and the manual\'s first steps', () => {
+  const e = r('src/editor.js'), m = r('docs/MANUAL.md');
+  assert.match(e, /'\(pointer: coarse\)'\)\.matches \? ' Pinch to zoom in\.' : ' Scroll to zoom in\.'/);
+  assert.match(e, /HINTS\[ed\.tool\] \+ zoomTip\(\)/);
+  assert.match(e, /if \(!ed\.zoomed && s > ed\.fit \* 1\.05\) \{ ed\.zoomed = true; hint\(\); \}/);
+  const steps = m.split('## Marking up a picture')[1].split('\n## ')[0];
+  assert.match(steps, /\*\*pinch to zoom in\*\* \(scroll on a computer\)/);
+});
+
+test('the tool hint sits in the tool row, after Crop, so it shows beside it on a phone instead of below the screen', () => {
+  const b = r('src/body.html');
+  const row = b.split('id="toolRow"')[1].split('</div>')[0];
+  assert.match(row, /data-tool="crop"[\s\S]*<p class="hint" id="toolHint" aria-live="polite"><\/p>\s*$/);
+  assert.equal((b.match(/id="toolHint"/g) || []).length, 1);
+  assert.match(r('src/style.css'), /\.tool-row \.hint\{flex:100 1 170px;/);
+});

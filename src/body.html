@@ -96,8 +96,9 @@
       <button data-tool="pen" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 20c3-1 4-4 6-6s4-1 4.5 1-1.5 3 1 3 3.5-3 4.5-5"/></svg><span>Pen</span></button>
       <button data-tool="cover" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><rect x="6" y="10" width="12" height="4" rx=".5" fill="currentColor"/></svg><span>Cover</span></button>
       <button data-tool="crop" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M7 3v14h14M3 7h14v14"/></svg><span>Crop</span></button>
+      <!-- the hint for the tool in use: beside Crop on a phone (the row's empty space), under the tools when they fit on one line -->
+      <p class="hint" id="toolHint" aria-live="polite"></p>
     </div>
-    <p class="hint" id="toolHint"></p>
     <div class="card opts">
       <div class="opt-line" id="optColours" role="group" aria-label="Colour">
         <button type="button" class="swatch-btn" data-colour="red" aria-pressed="true" aria-label="Red" style="--sw:#e53935"></button>

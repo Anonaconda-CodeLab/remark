@@ -124,6 +124,7 @@ window.RemarkEditor = (() => {
   const center = () => { const r = canvas.getBoundingClientRect(); return [r.width / 2, r.height / 2]; };
   function zoomAt(f, sx, sy) {
     const s = Math.max(ed.fit, Math.min(ed.fit * 12, ed.v.s * f));
+    if (!ed.zoomed && s > ed.fit * 1.05) { ed.zoomed = true; hint(); }
     const [px, py] = toPic(sx, sy);
     ed.v.s = s; ed.v.x = sx - px * s; ed.v.y = sy - py * s;
     keepIn();
@@ -151,11 +152,13 @@ window.RemarkEditor = (() => {
     crop: 'Drag the corners to keep only part of the picture.'
   };
   const TEXTY = new Set(['text', 'callout']);
+  // zooming is easy to miss: the hint mentions it until the person has zoomed once
+  const zoomTip = () => ed.zoomed ? '' : matchMedia('(pointer: coarse)').matches ? ' Pinch to zoom in.' : ' Scroll to zoom in.';
   function hint() {
     const m = selMark();
     $('toolHint').textContent = m && ed.tool !== 'crop'
       ? (m.kind === 'callout' ? 'Drag the round handle to what it\'s about. Drag the label to move it.' : 'Drag to move. Tap empty space to deselect.')
-      : HINTS[ed.tool];
+      : HINTS[ed.tool] + zoomTip();
   }
   function setTool(t) {
     endText();

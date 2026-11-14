@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.7
+- The hint for the tool in use now sits beside **Crop**, in the tool row's empty space, so it shows on a phone without
+  scrolling (it was below the tools, just off the screen).
+- Zooming is easier to find: that hint ends with "Pinch to zoom in." ("Scroll to zoom in." on a computer) until you
+  first zoom, and the manual's first steps mention it.
+
 ## 0.1.6
 - The donation card appears only on the screen of the picture that was just saved, never on another picture's.
 - Build: the output-folder check also follows links for the project's own folders; its test runs on a scratch copy.
