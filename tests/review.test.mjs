@@ -4,7 +4,7 @@
 // workflow's pre-release clean-up.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, mkdtempSync, existsSync, rmSync } from 'node:fs';
+import { readFileSync, mkdtempSync, existsSync, rmSync, symlinkSync, mkdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -43,7 +43,15 @@ test('saved, then changed again: closing asks first again', () => {
   assert.match(ch, /p\.done = false/);
   // the save side records the same snapshot the editor compares with
   assert.match(e, /const snap = p => JSON\.stringify\(\{ marks: p\.marks, crop: p\.crop \}\)/);
-  assert.match(s, /r\.pic\.savedAs = JSON\.stringify\(\{ marks: r\.pic\.marks, crop: r\.pic\.crop \}\)/);
+  // the snapshot is of what the file was made from, taken when it was made, not when the hand-over finished
+  assert.match(s, /const made = JSON\.stringify\(\{ marks: pic\.marks, crop: pic\.crop \}\);[^\n]*\n\s*const r = await render\(pic\)/);
+  assert.match(s, /r\.pic\.savedAs = r\.made;/);
+  assert.match(s, /if \(JSON\.stringify\(\{ marks: r\.pic\.marks, crop: r\.pic\.crop \}\) === r\.made\) \{ r\.pic\.done = true;/);
+  // every close guard asks about a crop too, not only marks
+  const a = r('src/app.js');
+  assert.match(a, /const unsaved = p => !p\.done && \(p\.marks\.length > 0 \|\| !!p\.crop\);/);
+  assert.equal((a.match(/unsaved\(pic\)|some\(unsaved\)/g) || []).length, 3);
+  assert.ok(!/marks\.length && !p(ic)?\.done/.test(a));
 });
 
 test('check screen: a late check never touches the preview; the old preview is let go; results are kept apart', () => {
@@ -77,11 +85,14 @@ test('Android share: a folder of its own for each share, never reused', () => {
 });
 
 test('build: refuses to empty the project itself or one of its folders; a folder elsewhere is fine', () => {
-  for (const bad of ['.', '..', 'src', 'src/out', 'tests']) {
+  // through a link to the checkout, too
+  const links = mkdtempSync(join(tmpdir(), 'remark-link-')); symlinkSync(root, join(links, 'checkout'));
+  for (const bad of ['.', '..', 'src', 'src/out', 'src/..keep', 'tests', join(links, 'checkout'), join(links, 'checkout', 'src')]) {
     const p = spawnSync(process.execPath, ['build.mjs'], { cwd: root, env: { ...process.env, REMARK_DIST: bad }, encoding: 'utf8' });
     assert.notEqual(p.status, 0, bad); assert.match(p.stderr, /refusing to empty/, bad);
   }
   assert.ok(existsSync(join(root, 'src', 'app.js')) && existsSync(join(root, 'tests', 'review.test.mjs')), 'nothing was deleted');
+  rmSync(links, { recursive: true, force: true });
   const out = mkdtempSync(join(tmpdir(), 'remark-dist-'));
   const ok = spawnSync(process.execPath, ['build.mjs'], { cwd: root, env: { ...process.env, REMARK_DIST: out }, encoding: 'utf8' });
   assert.equal(ok.status, 0, ok.stderr); assert.ok(existsSync(join(out, 'index.html')));
@@ -95,4 +106,6 @@ test('release workflow: one publication per destination at a time; an old pre-re
   assert.ok(!/--cleanup-tag \|\| true/.test(w), 'no failure hidden');
   for (const n of ['android-test', 'android-preview']) assert.match(w, new RegExp(`clear_prerelease ${n}\\n\\s*gh release create ${n}`));
   assert.match(w, /elif ! grep -q 'HTTP 404'/);
+  assert.equal((w.match(/elif ! grep -qi 'release not found\\\|HTTP 404'/g) || []).length, 2, 'a release lookup that fails for another reason stops');
+  assert.ok(!/gh release view "\$1" >\/dev\/null 2>&1; then/.test(w));
 });

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.5
+CodeRabbit's follow-ups on PR #1:
+- Closing a picture asks first when only its crop has changed, not just its marks.
+- A picture counts as saved only if the saved file was made from it as it is now: changed again while it was being
+  saved, it still asks before closing.
+- Build: the output-folder check follows links and compares whole folder names.
+- Release workflow: a pre-release that can't be looked up for any reason other than "not there" stops the run.
+
 ## 0.1.4
 Fixes from CodeRabbit's full review (PR #1, 14 Nov 2026):
 - **Pinch to zoom works on phones.** Two fingers on the picture threw an error on every move, so nothing zoomed.

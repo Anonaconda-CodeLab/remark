@@ -5,8 +5,8 @@
 //   node build.mjs              -> dist/index.html (+ icons, web manifest, _headers, robots.txt, sitemap.xml)
 // dist/ is not committed: Cloudflare Pages runs this build and publishes dist/ (with dist/_headers), and the Android
 // workflow does the same. Adapted from Redact's build.mjs (1.0.0, f84acd6), without the detection engines.
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, readdirSync, rmSync } from 'node:fs';
-import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, readdirSync, rmSync, realpathSync } from 'node:fs';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
@@ -162,9 +162,11 @@ ${js}
 
 // the output folder is emptied first, so it must never be the checkout, a folder above it, or one of the source folders
 {
-  const within = (a, b) => { const r = relative(b, a); return r === '' || (!r.startsWith('..') && !isAbsolute(r)); };
-  const own = ['src', 'docs', 'tests', 'mobile', '.github', '.git'].map(d => join(root, d));
-  if (within(root, DIST) || own.some(d => within(DIST, d) || within(d, DIST))) {
+  // real paths (links followed, as far as the folders exist), compared folder by folder
+  const real = p => { let tail = []; for (;;) { try { return join(realpathSync(p), ...tail); } catch (e) { const up = dirname(p); if (up === p) return join(p, ...tail); tail.unshift(basename(p)); p = up; } } };
+  const within = (a, b) => { const r = relative(b, a); return r === '' || (r !== '..' && !r.startsWith('..' + sep) && !isAbsolute(r)); };
+  const dist = real(DIST), base = real(root), own = ['src', 'docs', 'tests', 'mobile', '.github', '.git'].map(d => join(base, d));
+  if (within(base, dist) || own.some(d => within(dist, d) || within(d, dist))) {
     console.error(`build: refusing to empty ${DIST} (it holds or is inside this project's own files)`); process.exit(1);
   }
 }

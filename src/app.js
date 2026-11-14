@@ -83,6 +83,8 @@ const RemarkApp = (() => {
     $('pics').replaceChildren(...state.pics.map(p => p.el));
     $('addRow').classList.toggle('compact', state.pics.length > 0);
   }
+  // marks or a crop that haven't been saved (a picture with neither is the original, which stays as it was)
+  const unsaved = p => !p.done && (p.marks.length > 0 || !!p.crop);
   function removePic(pic) {
     state.pics = state.pics.filter(p => p !== pic);
     pic.removed = true; pic.bytes = null;
@@ -103,7 +105,7 @@ const RemarkApp = (() => {
       el.querySelector('.pic-thumb').onclick = open;
       el.querySelector('.pic-info').onclick = open;
       el.querySelector('[data-a="remove"]').onclick = () => {
-        if (pic.marks.length && !pic.done && !confirm('Close this picture? Its marks haven\'t been saved.')) return;
+        if (unsaved(pic) && !confirm('Close this picture? Its changes haven\'t been saved.')) return;
         removePic(pic);
       };
       state.pics.push(pic); describe(pic);
@@ -182,7 +184,7 @@ const RemarkApp = (() => {
     addFiles(files.map((f, i) => new File([f], `pasted-${state.next + i}.${f.type === 'image/png' ? 'png' : 'jpg'}`, { type: f.type })));
   });
   $('btnClearAll').onclick = () => {
-    if (state.pics.some(p => p.marks.length && !p.done) && !confirm('Close all pictures? Marks you haven\'t saved are lost.')) return;
+    if (state.pics.some(unsaved) && !confirm('Close all pictures? Changes you haven\'t saved are lost.')) return;
     for (const p of state.pics.slice()) removePic(p);
   };
   // Android: its own picker (photos, or any file), and pictures shared to Remark
@@ -197,7 +199,7 @@ const RemarkApp = (() => {
     take();
   }
   // pictures exist only in memory: leaving the page (a link opens in the same tab) would lose them, so ask first
-  window.addEventListener('beforeunload', e => { if (!NATIVE && state.pics.some(p => p.marks.length && !p.done)) { e.preventDefault(); e.returnValue = ''; } });
+  window.addEventListener('beforeunload', e => { if (!NATIVE && state.pics.some(unsaved)) { e.preventDefault(); e.returnValue = ''; } });
 
   // ---------- about, manual, Back ----------
   let aboutFrom = 'scrHome';

@@ -66,6 +66,7 @@ window.RemarkSave = (() => {
     try {
       await document.fonts.ready;
       const mime = A.settings.format === 'png' ? 'image/png' : A.settings.format === 'jpeg' ? 'image/jpeg' : pic.type === 'png' ? 'image/png' : 'image/jpeg';
+      const made = JSON.stringify({ marks: pic.marks, crop: pic.crop });   // what this file is made from (as the editor's snapshots)
       const r = await render(pic), { W, H } = r;
       const blob = await r.cv.convertToBlob({ type: mime, quality: 0.92 });
       r.cv.width = r.cv.height = 1;
@@ -101,7 +102,7 @@ window.RemarkSave = (() => {
       item('', had.length ? `Hidden data removed: ${[...new Set(had.map(x => x.label))].slice(0, 6).join(', ')}${had.length > 6 ? '…' : ''}.` : 'No hidden data: the original had none, and the new file has none either.', had.length && where ? 'Including where the photo was taken.' : 'The new file holds the picture and nothing else.');
       const name = outName(pic, mime === 'image/png' ? 'png' : 'jpg');
       item('', `${mime === 'image/png' ? 'PNG' : 'JPEG'}, ${W} × ${H}, ${A.size(out.length)}.`, name);
-      cur = { pic, bytes: out, mime, name, saved: false };
+      cur = { pic, bytes: out, mime, name, saved: false, made };
       $('checkTitle').textContent = 'Ready to save';
       $('checkSub').textContent = `Picture ${pic.n}`;
       $('saveRow').hidden = false;
@@ -155,8 +156,9 @@ window.RemarkSave = (() => {
   }
   // r: the result that was saved, shared or copied (the person may have moved on while it was being handed over)
   function saved(r) {
-    r.saved = true; r.pic.done = true; r.pic.el.classList.add('done');
-    r.pic.savedAs = JSON.stringify({ marks: r.pic.marks, crop: r.pic.crop });   // as the editor's snapshots
+    r.saved = true; r.pic.savedAs = r.made;
+    // saved means the picture as it is now is in that file: changed again meanwhile, it still counts as unsaved
+    if (JSON.stringify({ marks: r.pic.marks, crop: r.pic.crop }) === r.made) { r.pic.done = true; r.pic.el.classList.add('done'); }
     countUse();
     if (cur !== r) return;
     $('btnSave').textContent = 'Save a copy';
