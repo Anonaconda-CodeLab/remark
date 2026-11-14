@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+- Opened inside LINE's built-in browser (from a link in a chat), Remark shows a small banner at the top: LINE's
+  browser can't save or share pictures, with **Open in your browser**, which opens the same address in the phone's
+  own browser (LINE's `openExternalBrowser=1`). Web only; never in the Android app.
+
 ## 0.1.2
 Fixes from the private security review (13 Nov 2026):
 - Copy picture: a JPEG copied as PNG now goes through Unmarked's cleaner and inspector too, like every saved file;

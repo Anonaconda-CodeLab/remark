@@ -88,6 +88,9 @@ a.btn.coffee{background:#72a4f2;border-color:#5a8fe0;color:#10213f}
 .donate .acts{display:flex;gap:8px;flex-wrap:wrap}
 .thanks{color:var(--muted);font-size:14px;line-height:1.5;margin:4px 4px 6px;text-align:center}
 .thanks a{color:var(--fg);font-weight:500;text-underline-offset:3px}
+/* LINE's built-in browser: a banner at the top (line.js) */
+.line-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 12px 0;padding:10px 12px;border-radius:12px;background:var(--accent-soft);color:var(--fg);font-size:14px}
+.line-bar .btn{flex:none;text-decoration:none}
 html:not(.native) .native-only{display:none}
 html.native .web-only{display:none}
 .app-link{margin:0;font-size:14px}

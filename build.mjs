@@ -118,7 +118,7 @@ const fonts = `@font-face{font-family:"Instrument Sans";font-style:normal;font-d
 const css = `<style>${fonts}\n${src('style.css')}</style>`;
 
 const noClose = (name, s) => { if (/<\/script/i.test(s)) throw new Error(name + ' contains a closing script tag'); return s; };
-const appJs = noClose('app', [src('picture.js'), src('fill.js'), src('paint.js'), src('marks.js'), src('clean.js'), fill(src('native.js')), fill(src('app.js')), src('editor.js'), src('save.js')].join('\n'));
+const appJs = noClose('app', [src('picture.js'), src('fill.js'), src('paint.js'), src('marks.js'), src('clean.js'), fill(src('native.js')), fill(src('app.js')), src('editor.js'), src('save.js'), src('line.js')].join('\n'));
 const js = `<script>\n${appJs}\n</script>`;
 const body = fill(src('body.html'));
 const title = `<title>${APP.APP_NAME}</title>`;
