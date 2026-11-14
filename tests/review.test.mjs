@@ -8,9 +8,10 @@ import { readFileSync, mkdtempSync, existsSync, rmSync, symlinkSync, cpSync } fr
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import '../src/marks.js';
 const M = globalThis.RemarkMarks;
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 const r = f => readFileSync(join(root, f), 'utf8');
 
 test('box corners: the opposite corner stays put through a whole drag, even across the other side', () => {
